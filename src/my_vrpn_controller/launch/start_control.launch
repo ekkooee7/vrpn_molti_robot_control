@@ -1,0 +1,13 @@
+<launch>
+    <node name="vrpn_client_node" pkg="vrpn_client_ros" type="vrpn_client_node" output="screen">
+        
+        <param name="server" value="10.1.1.198" /> <param name="port" value="3883" />       <param name="tracker" value="gx2" />   
+
+    </node>
+
+    <node name="vrpn_to_cmdvel_controller" pkg="my_vrpn_controller" type="vrpn_to_cmdvel.py" output="screen">
+        <param name="goal_x" value="2.5" />
+        <param name="goal_y" value="-1.0" />
+        <param name="vrpn_topic" value="/vrpn_client_node/gx2/pose" />
+    </node>
+</launch>

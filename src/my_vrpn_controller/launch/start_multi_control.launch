@@ -1,0 +1,56 @@
+<launch>
+    <!-- 定义全局参数 -->
+    <arg name="server_ip" default="10.1.1.198" />
+    <arg name="server_port" default="3883" />
+    <arg name="interface" default="enp3s0" />
+
+    <!-- 
+      <<< MODIFIED: 启动一个唯一的、中央的VRPN客户端节点 >>>
+      这个节点将使用“自动发现模式”来获取所有追踪器的数据
+    -->
+    <node pkg="vrpn_client_ros" type="vrpn_client_node" name="vrpn_client_node" output="screen">
+        <rosparam subst_value="true">
+            server: $(arg server_ip)
+            port: $(arg server_port)
+            interface: $(arg interface)
+            update_frequency: 100.0
+            frame_id: world
+            use_server_time: false
+            broadcast_tf: true  <!-- 如果您不需要VRPN广播TF，可以设为false -->
+            
+            # 关键：使用自动发现模式
+            refresh_tracker_frequency: 1.0
+        </rosparam>
+    </node>
+
+    <!-- ######################## ROBOT GX0 ######################## -->
+    <group ns="gx0">
+        <!-- 
+          <<< MODIFIED: 不再需要为gx0单独启动VRPN节点 >>>
+          控制器节点会自动订阅由中央VRPN节点发布的 /vrpn_client_node/gx0/pose 话题
+        -->
+        <node name="controller" pkg="my_vrpn_controller" type="multi_robot_controller.py" output="screen">
+            <param name="robot_name" value="gx0" />
+            <rosparam file="$(find my_vrpn_controller)/config/gx0_waypoints.yaml" command="load" />
+            <param name="yaw_offset" value="0.0" /> 
+        </node>
+    </group>
+
+    <!-- ######################## ROBOT GX1 ######################## -->
+    <group ns="gx1">
+        <node name="controller" pkg="my_vrpn_controller" type="multi_robot_controller.py" output="screen">
+            <param name="robot_name" value="gx1" />
+            <rosparam file="$(find my_vrpn_controller)/config/gx1_waypoints.yaml" command="load" />
+            <param name="yaw_offset" value="0.0" />
+        </node>
+    </group>
+
+    <!-- ######################## ROBOT GX2 ######################## -->
+    <group ns="gx2">
+        <node name="controller" pkg="my_vrpn_controller" type="multi_robot_controller.py" output="screen">
+            <param name="robot_name" value="gx2" />
+            <rosparam file="$(find my_vrpn_controller)/config/gx2_waypoints.yaml" command="load" />
+            <param name="yaw_offset" value="0.0" />
+        </node>
+    </group>
+</launch>
