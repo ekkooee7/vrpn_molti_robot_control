@@ -13,14 +13,19 @@ class VRPNtoCmdVelController:
 
         # --- 参数 ---
         # VRPN Tracker的话题名称
-        vrpn_topic_name = rospy.get_param('~vrpn_topic', '/vrpn_client_node/gx2/pose')
+        vrpn_topic_name = rospy.get_param('~vrpn_topic', '/vrpn_client_node/gx0/pose')
 
         # --- 路径点 (单位: 毫米) ---
         # 坐标单位为毫米 (mm)
         self.waypoints = [
-            (27.0 , 5426.0),
-            (-1333.0 , 4307.0),
-            (974.0 , 2616.0)
+            (-196.0, 6728.0),
+            (-93.0, 5479.0),
+            (-71.0, 4725.0),
+            (-9.0, 3443.0),
+            (-9.0, 3443.0),
+            (1069.0, 3398.0),
+            (1747.0, 3427.0),
+            (2335.0, 3363.0),
         ]
         self.waypoint_index = 0
         self.goal_x = self.waypoints[self.waypoint_index][0]
@@ -28,7 +33,7 @@ class VRPNtoCmdVelController:
 
         # --- 控制器参数 (全部统一为毫米/秒体系) ---
         # <<< FIX: 将所有参数调整到毫米尺度，并设定合理的值 >>>
-        self.distance_tolerance = 400.0  # 容忍度: 300毫米 (30厘米)，这是一个合理的值
+        self.distance_tolerance = 150.0  # 容忍度: 300毫米 (30厘米)，这是一个合理的值
         self.angle_tolerance = 0.2       # 角度容忍度: 0.2弧度 (约11.5度)，比1.0更精确
         self.linear_speed_gain = 0.2     # 线性速度增益: 调小以适应毫米单位的大误差值
         self.angular_speed_gain = 1.0    # 角速度增益: 1.0可以提供较快的转向响应
@@ -41,10 +46,10 @@ class VRPNtoCmdVelController:
 
         # --- ROS发布者和订阅者 ---
         # 确保发布的Topic名称正确
-        self.cmd_vel_pub = rospy.Publisher('/gx2/cmd_vel', Twist, queue_size=10)
+        self.cmd_vel_pub = rospy.Publisher('/gx0/cmd_vel', Twist, queue_size=10)
         self.vrpn_sub = rospy.Subscriber(vrpn_topic_name, PoseStamped, self.pose_callback)
 
-        rospy.loginfo("Controller started in MILLIMETER mode for tracker 'gx2'.")
+        rospy.loginfo("Controller started in MILLIMETER mode for tracker 'gx0'.")
         self.log_current_goal()
 
     def log_current_goal(self):

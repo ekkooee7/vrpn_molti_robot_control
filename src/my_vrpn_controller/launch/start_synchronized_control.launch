@@ -1,0 +1,42 @@
+<launch>
+    <arg name="server_ip" default="10.1.1.198" />
+    <arg name="server_port" default="3883" />
+    <arg name="interface" default="enp3s0" />
+
+    <node pkg="vrpn_client_ros" type="vrpn_client_node" name="vrpn_client_node" output="screen">
+        <rosparam subst_value="true">
+            server: $(arg server_ip)
+            port: $(arg server_port)
+            interface: $(arg interface)
+            refresh_tracker_frequency: 1.0
+        </rosparam>
+    </node>
+
+    <node pkg="my_vrpn_controller" type="mission_coordinator.py" name="mission_coordinator" output="screen">
+        <rosparam param="robot_names">['gx0', 'gx1', 'gx2']</rosparam>
+    </node>
+
+    <group ns="gx0">
+        <node name="controller" pkg="my_vrpn_controller" type="multi_robot_controller_sync.py" output="screen">
+            <param name="robot_name" value="gx0" />
+            <rosparam file="$(find my_vrpn_controller)/config/gx0_waypoints.yaml" command="load" />
+            <param name="yaw_offset" value="0.0" /> 
+        </node>
+    </group>
+
+    <group ns="gx1">
+        <node name="controller" pkg="my_vrpn_controller" type="multi_robot_controller_sync.py" output="screen">
+            <param name="robot_name" value="gx1" />
+            <rosparam file="$(find my_vrpn_controller)/config/gx1_waypoints.yaml" command="load" />
+            <param name="yaw_offset" value="0.0" />
+        </node>
+    </group>
+
+    <group ns="gx2">
+        <node name="controller" pkg="my_vrpn_controller" type="multi_robot_controller_sync.py" output="screen">
+            <param name="robot_name" value="gx2" />
+            <rosparam file="$(find my_vrpn_controller)/config/gx2_waypoints.yaml" command="load" />
+            <param name="yaw_offset" value="0.0" />
+        </node>
+    </group>
+</launch>

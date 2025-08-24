@@ -1,0 +1,14 @@
+ssh sustech@192.168.110.16 
+ssh amas@192.168.110.201 
+ssh amas-grasp@192.168.110.186 
+
+sudo ip route del default
+sudo ip route add default via 192.168.110.1 dev wlx6c1ff73e9371
+sudo ip route add 10.1.1.0/24 dev enp3s0
+
+roscore
+
+sudo ip link set can0 up type can bitrate 500000
+
+roslaunch tracer_bringup tracer_robot_base.launch 
+
